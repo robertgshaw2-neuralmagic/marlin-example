@@ -1,6 +1,4 @@
 import argparse
-import torch
-import os
 
 from transformers import AutoTokenizer, AutoConfig
 from auto_gptq import AutoGPTQForCausalLM
