@@ -7,10 +7,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model-id", type=str)
 parser.add_argument("--marlin-save-dir", type=str)
 parser.add_argument("--gptq-save-dir", type=str)
+parser.add_argument("--channelwise", action="store_true")
 
-MAX_SEQ_LEN = 2048
+MAX_SEQ_LEN = 512
 NUM_EXAMPLES = 512
-CHANNELWISE = True
 
 def preprocess(example):
         return {"text": tokenizer.apply_chat_template(example["messages"], tokenize=False)}
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         ) for example in ds
     ]
 
-    if CHANNELWISE:
+    if args.channelwise:
         group_size = -1
     else:
         group_size = 128
