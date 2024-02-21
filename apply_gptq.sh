@@ -13,11 +13,11 @@ if [ "$channelwise" = true ]; then
     gptq_save_dir="./$gptq_name"
     marlin_save_dir="./$marlin_name"
 
-    # python3 apply_gptq_save_marlin.py \
-    #     --model-id $model_id \
-    #     --gptq-save-dir $gptq_save_dir \
-    #     --marlin-save-dir $marlin_save_dir \
-    #     --channelwise
+    python3 apply_gptq_save_marlin.py \
+        --model-id $model_id \
+        --gptq-save-dir $gptq_save_dir \
+        --marlin-save-dir $marlin_save_dir \
+        --channelwise
 
 else
     gptq_name=$model_name-g128-gptq
@@ -25,10 +25,10 @@ else
     gptq_save_dir="./$gptq_name"
     marlin_save_dir="./$marlin_name"
 
-    # python3 apply_gptq_save_marlin.py \
-    #     --model-id $model_id \
-    #     --gptq-save-dir $gptq_save_dir \
-    #     --marlin-save-dir $marlin_save_dir
+    python3 apply_gptq_save_marlin.py \
+        --model-id $model_id \
+        --gptq-save-dir $gptq_save_dir \
+        --marlin-save-dir $marlin_save_dir
 fi
 
 # rm $gptq_save_dir/autogptq_model.safetensors
