@@ -1,16 +1,15 @@
-import argparse, gc
+import argparse, gc, shutil
 from transformers import AutoTokenizer
 from auto_gptq import AutoGPTQForCausalLM, BaseQuantizeConfig
 from datasets import load_dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model-id", type=str)
-parser.add_argument("--marlin-save-dir", type=str)
-parser.add_argument("--gptq-save-dir", type=str)
+parser.add_argument("--save-dir", type=str)
 parser.add_argument("--channelwise", action="store_true")
+parser.add_argument("--num-samples", type=int, default=10)
+parser.add_argument("--max-seq-len", type=int, default=10)
 
-MAX_SEQ_LEN = 512
-NUM_EXAMPLES = 512
 
 def preprocess(example):
         return {"text": tokenizer.apply_chat_template(example["messages"], tokenize=False)}
@@ -18,14 +17,14 @@ def preprocess(example):
 if __name__ == "__main__":
     args = parser.parse_args()
 
-    dataset = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft")
+    dataset = load_dataset("HuggingFaceH4/ultrachat_200k", split="train_sft[:5%]")
     tokenizer = AutoTokenizer.from_pretrained(args.model_id)
-    ds = dataset.shuffle().select(range(NUM_EXAMPLES))
+    ds = dataset.shuffle().select(range(args.num_samples))
     ds = ds.map(preprocess)
 
     examples = [
         tokenizer(
-            example["text"], padding=False, max_length=MAX_SEQ_LEN, truncation=True,
+            example["text"], padding=False, max_length=args.max_seq_len, truncation=True,
         ) for example in ds
     ]
 
@@ -47,7 +46,7 @@ if __name__ == "__main__":
         device_map="auto")
     model.quantize(examples)
     
-    gptq_save_dir = args.gptq_save_dir
+    gptq_save_dir = "./tmp-gptq"
     print(f"Saving gptq model to {gptq_save_dir}")
     model.save_pretrained(gptq_save_dir)
     tokenizer.save_pretrained(gptq_save_dir)
@@ -56,6 +55,7 @@ if __name__ == "__main__":
     gc.collect()
 
     print("Reloading in marlin format")
+    
     marlin_model = AutoGPTQForCausalLM.from_quantized(
         gptq_save_dir, 
         use_marlin=True, 
@@ -64,3 +64,5 @@ if __name__ == "__main__":
     print("Saving in marlin format")
     marlin_model.save_pretrained(args.marlin_save_dir)
     tokenizer.save_pretrained(args.marlin_save_dir)
+
+    shutil.rmtree(gptq_save_dir)
