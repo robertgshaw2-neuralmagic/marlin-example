@@ -1,0 +1,4 @@
+auto-gptq==0.7.1
+torch==2.2.1
+transformers
+protobuf
