@@ -7,8 +7,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model-id", type=str)
 parser.add_argument("--save-dir", type=str)
 parser.add_argument("--channelwise", action="store_true")
-parser.add_argument("--num-samples", type=int, default=10)
-parser.add_argument("--max-seq-len", type=int, default=10)
+parser.add_argument("--num-samples", type=int, default=128)
+parser.add_argument("--max-seq-len", type=int, default=512)
 
 
 def preprocess(example):
@@ -62,7 +62,7 @@ if __name__ == "__main__":
         device_map="auto")
 
     print("Saving in marlin format")
-    marlin_model.save_pretrained(args.marlin_save_dir)
-    tokenizer.save_pretrained(args.marlin_save_dir)
+    marlin_model.save_pretrained(args.save_dir)
+    tokenizer.save_pretrained(args.save_dir)
 
     shutil.rmtree(gptq_save_dir)
