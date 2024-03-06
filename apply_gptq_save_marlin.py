@@ -7,8 +7,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--model-id", type=str)
 parser.add_argument("--save-dir", type=str)
 parser.add_argument("--channelwise", action="store_true")
-parser.add_argument("--num-samples", type=int, default=128)
-parser.add_argument("--max-seq-len", type=int, default=512)
+parser.add_argument("--num-samples", type=int, default=512)
+parser.add_argument("--max-seq-len", type=int, default=2048)
 
 
 def preprocess(example):
